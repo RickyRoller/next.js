@@ -7,7 +7,7 @@ import type {
 } from '../../client/components/router-reducer/router-reducer-types'
 import type { FetchServerResponseResult } from '../../client/components/router-reducer/fetch-server-response'
 import type { FlightRouterState } from '../../server/app-render/types'
-import React from 'react'
+import React, { type TransitionStartFunction } from 'react'
 import type { ErrorComponent } from '../../client/components/error-boundary'
 
 export type ChildSegmentMap = Map<string, CacheNode>
@@ -126,6 +126,8 @@ export interface PrefetchOptions {
 }
 
 export interface AppRouterInstance {
+  isRouterTransitioning: boolean
+  startRouterTransition: TransitionStartFunction
   /**
    * Navigate to the previous history entry.
    */

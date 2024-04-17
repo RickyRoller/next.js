@@ -234,8 +234,8 @@ function linkClicked(
     }
   }
 
-  if (isAppRouter) {
-    React.startTransition(navigate)
+  if (isAppRouter && 'startRouterTransition' in router) {
+    router.startRouterTransition(navigate)
   } else {
     navigate()
   }

@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { type ReactNode, useTransition } from 'react'
 import React, {
   use,
   useEffect,
@@ -321,6 +321,7 @@ function Router({
   )
   const [reducerState, dispatch, sync] =
     useReducerWithReduxDevtools(initialState)
+  const [isRouterTransitioning, startRouterTransition] = useTransition()
 
   useEffect(() => {
     // Ensure initialParallelRoutes is cleaned up from memory once it's used.
@@ -353,6 +354,8 @@ function Router({
    */
   const appRouter = useMemo<AppRouterInstance>(() => {
     const routerInstance: AppRouterInstance = {
+      isRouterTransitioning,
+      startRouterTransition,
       back: () => window.history.back(),
       forward: () => window.history.forward(),
       prefetch: (href, options) => {
@@ -369,7 +372,7 @@ function Router({
         if (isExternalURL(url)) {
           return
         }
-        startTransition(() => {
+        startRouterTransition(() => {
           dispatch({
             type: ACTION_PREFETCH,
             url,
@@ -378,17 +381,17 @@ function Router({
         })
       },
       replace: (href, options = {}) => {
-        startTransition(() => {
+        startRouterTransition(() => {
           navigate(href, 'replace', options.scroll ?? true)
         })
       },
       push: (href, options = {}) => {
-        startTransition(() => {
+        startRouterTransition(() => {
           navigate(href, 'push', options.scroll ?? true)
         })
       },
       refresh: () => {
-        startTransition(() => {
+        startRouterTransition(() => {
           dispatch({
             type: ACTION_REFRESH,
             origin: window.location.origin,
@@ -401,7 +404,7 @@ function Router({
             'fastRefresh can only be used in development mode. Please use refresh instead.'
           )
         } else {
-          startTransition(() => {
+          startRouterTransition(() => {
             dispatch({
               type: ACTION_FAST_REFRESH,
               origin: window.location.origin,
@@ -412,7 +415,7 @@ function Router({
     }
 
     return routerInstance
-  }, [dispatch, navigate])
+  }, [dispatch, isRouterTransitioning, navigate])
 
   useEffect(() => {
     // Exists for debugging purposes. Don't use in application code.

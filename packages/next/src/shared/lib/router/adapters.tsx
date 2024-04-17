@@ -13,6 +13,8 @@ export function adaptForAppRouterInstance(
   pagesRouter: NextRouter
 ): AppRouterInstance {
   return {
+    isRouterTransitioning: false,
+    startRouterTransition: () => () => {},
     back() {
       pagesRouter.back()
     },
